@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.awt.Desktop;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+
 
 @Service
 public class PixService {
