@@ -31,19 +31,22 @@ cd payment-system
 ```
 
 2. Configure o banco de dados:
-- Crie um banco MySQL chamado `payment_system`
-- Atualize as credenciais no `application.properties` ou `credentials.json`
+- O sistema usará automaticamente o banco MySQL chamado `payments` (criado automaticamente se não existir)
+- Credenciais padrão (podem ser alteradas no arquivo `application.properties`):
+  - Usuário: `root`
+  - Senha: `root`
 
-3. Build e execução:
+3. Configure as variáveis de ambiente:
+- `MAIL_USER`: Seu email para envio de confirmações
+- `MAIL_PASSWORD`: Senha do email
+- `JWT_SECRET`: Chave secreta para geração de tokens JWT
+
+4. Build e execução:
 ```bash
 mvn clean install
 mvn spring-boot:run
 ```
 
-Ou usando Docker:
-```bash
-docker-compose up --build
-```
 
 ## Endpoints da API
 
@@ -93,6 +96,18 @@ curl -X POST http://localhost:8080/pix/cobrar \
     "infoPagador": "Pagamento de serviço"
 }'
 ```
+
+## Configurações do Banco de Dados
+O sistema está configurado para:
+- Criar automaticamente o banco de dados se não existir (`createDatabaseIfNotExist=true`)
+- Usar SSL desabilitado para desenvolvimento local (`useSSL=false`)
+- Configuração de timezone UTC (`serverTimezone=UTC`)
+- Permitir recuperação de chave pública (`allowPublicKeyRetrieval=true`)
+
+## Configurações de Email
+O sistema usa SMTP do Gmail configurável através das variáveis de ambiente:
+- Porta: 587
+- Autenticação e STARTTLS habilitados
 
 ## Licença
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
