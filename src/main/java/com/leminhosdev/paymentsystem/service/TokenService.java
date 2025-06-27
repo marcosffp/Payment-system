@@ -12,40 +12,65 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * Serviço responsável por gerar e validar tokens JWT utilizados para
+ * autenticação de usuários.
+ */
 @Service
 public class TokenService {
 
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(User user){
+    /**
+     * Gera um token JWT com base nos dados do usuário fornecido.
+     *
+     * @param user O usuário autenticado.
+     * @return Token JWT gerado.
+     * @throws RuntimeException Se ocorrer erro durante a criação do token.
+     */
+    public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = JWT.create()
+            return JWT.create()
                     .withIssuer("auth")
                     .withSubject(user.getEmail())
-                    .withExpiresAt(ExpirationDate())
+                    .withExpiresAt(expirationDate())
                     .sign(algorithm);
-            return token;
-        }catch (JWTCreationException exception){
+        } catch (JWTCreationException exception) {
             throw new RuntimeException("ERRO: Token não foi gerado", exception);
         }
     }
 
-    public String validateToken(String token){
-        try{
+    /**
+     * Valida um token JWT e retorna o e-mail (subject) do usuário.
+     *
+     * @param token Token JWT a ser validado.
+     * @return O e-mail do usuário contido no subject do token.
+     * @throws RuntimeException Se o token for inválido ou estiver expirado.
+     */
+    public String validateToken(String token) {
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return  JWT.require(algorithm)
+            return JWT.require(algorithm)
                     .withIssuer("auth")
                     .build()
                     .verify(token)
                     .getSubject();
-        } catch (JWTVerificationException exception){
-            throw new RuntimeException("Token inválido");
+        } catch (JWTVerificationException exception) {
+            throw new RuntimeException("Token inválido", exception);
         }
     }
 
-    private Instant ExpirationDate() {
-        return LocalDateTime.now().plusMinutes(60).toInstant(ZoneOffset.of("-03:00"));
+    /**
+     * Define a data de expiração do token, que é 60 minutos a partir do momento
+     * atual.
+     *
+     * @return Um {@link Instant} representando o horário de expiração.
+     */
+    private Instant expirationDate() {
+        return LocalDateTime.now()
+                .plusMinutes(60)
+                .toInstant(ZoneOffset.of("-03:00")); // Fuso horário de Brasília
     }
 }

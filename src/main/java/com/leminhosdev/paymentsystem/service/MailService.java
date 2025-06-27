@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * Serviço responsável por envio de e-mails de verificação para novos usuários.
+ */
 @Service
 public class MailService {
 
@@ -17,6 +20,15 @@ public class MailService {
     private JavaMailSender emailSender;
     private String verifyURL = "http://localhost:8080/api/v1/user/verify?code=";
 
+    /**
+     * Envia um e-mail de verificação para o usuário informado.
+     *
+     * @param user O usuário que receberá o e-mail.
+     * @throws MessagingException           Se ocorrer erro ao montar ou enviar o
+     *                                      e-mail.
+     * @throws UnsupportedEncodingException Se o nome do remetente não puder ser
+     *                                      codificado.
+     */
     public void sendVerificationEmail(User user) throws MessagingException, UnsupportedEncodingException {
         String toAddres = user.getEmail();
         String fromAddres = "blockbitcompany@gmail.com";
