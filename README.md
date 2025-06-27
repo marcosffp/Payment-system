@@ -67,6 +67,56 @@ mvn spring-boot:run
 
 ---
 
+## Configuração de Variáveis de Ambiente via `.env`
+
+O projeto utiliza a biblioteca [Dotenv](https://github.com/cdimascio/java-dotenv) para carregar variáveis de ambiente a partir de um arquivo `.env` na raiz do projeto, facilitando a configuração local e em ambientes que não usam variáveis de ambiente diretamente.
+
+No método `main` da aplicação, as variáveis são carregadas e configuradas no sistema Java:
+
+```java
+public static void main(String[] args) {
+    // Carregar variáveis do .env
+    Dotenv dotenv = Dotenv.load();
+    System.setProperty("DB_PORT", dotenv.get("DB_PORT"));
+    System.setProperty("DB_USERNAME", dotenv.get("DB_USER"));
+    System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
+    System.setProperty("MAIL_USER", dotenv.get("MAIL_USER"));
+    System.setProperty("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
+    System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET")); 
+    SpringApplication.run(PaymentSystemApplication.class, args);
+}
+```
+
+### Variáveis esperadas no arquivo `.env`
+
+Você deve criar um arquivo `.env` na raiz do projeto contendo, por exemplo:
+
+```
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=root
+MAIL_USER=seu-email@gmail.com
+MAIL_PASSWORD=sua-senha-email
+JWT_SECRET=sua-chave-secreta-jwt
+```
+
+---
+
+### Como funciona essa configuração
+
+* No início da aplicação, o arquivo `.env` é lido e suas variáveis são injetadas como propriedades do sistema (`System.setProperty`).
+* O Spring Boot lê essas propriedades para configurar banco de dados, email, JWT, etc.
+* Essa abordagem facilita desenvolvimento local e evita hardcoding de segredos no código-fonte.
+
+---
+
+### Atenção
+
+* Nunca comite seu arquivo `.env` com senhas ou segredos reais em repositórios públicos.
+* Em produção, é recomendado configurar variáveis de ambiente diretamente no servidor ou usar serviços de gerenciamento de segredos.
+
+---
+
 ## Arquitetura e Componentes Principais
 
 ### Beans e Injeção de Dependência
@@ -214,5 +264,4 @@ curl -X POST http://localhost:8080/pix/cobrar \
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
-
 
